@@ -1,28 +1,29 @@
 package com.pranav.foodly.resources;
 
-import com.pranav.foodly.core.Suggestion;
+import io.dropwizard.hibernate.UnitOfWork;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import com.pranav.foodly.core.Suggestion;
+import com.pranav.foodly.core.SuggestionDAO;
 
-/**
- * Created by pgandhi on 7/21/14.
- */
-@Path("/foodly")
+
+@Path("/suggestions")
 @Produces(MediaType.APPLICATION_JSON)
 public class GetFoodlySuggestion {
 
-  private String[] restaurants;
+  private SuggestionDAO sgdao;
 
-  public GetFoodlySuggestion(String[] restaurants) {
-    this.restaurants = restaurants;
+  public GetFoodlySuggestion(String[] restaurants, SuggestionDAO sgdao) {
+    this.sgdao = sgdao;
   }
 
   @GET
+  @UnitOfWork
   public Suggestion getSuggestion() {
-    return new Suggestion(this.restaurants);
+    return this.sgdao.findById(new Long(0));
   }
 }

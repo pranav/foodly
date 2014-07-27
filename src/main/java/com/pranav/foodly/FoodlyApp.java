@@ -1,32 +1,43 @@
 package com.pranav.foodly;
 
-import com.pranav.foodly.resources.GetFoodlySuggestion;
 import io.dropwizard.Application;
+import io.dropwizard.db.DataSourceFactory;
+import io.dropwizard.hibernate.HibernateBundle;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
-/**
- * Created by pgandhi on 7/21/14.
- */
+import com.pranav.foodly.core.Suggestion;
+import com.pranav.foodly.core.SuggestionDAO;
+import com.pranav.foodly.resources.GetFoodlySuggestion;
+
+
 public class FoodlyApp extends Application<FoodlyConfiguration> {
-    public static void main(String[] args) throws Exception {
-        new FoodlyApp().run(args);
-    }
+  public static void main(String[] args) throws Exception {
+    new FoodlyApp().run(args);
+  }
 
+  private final HibernateBundle<FoodlyConfiguration> hibernate = new HibernateBundle<FoodlyConfiguration>(Suggestion.class) {
     @Override
-    public String getName() {
-       return "foodly";
+    public DataSourceFactory getDataSourceFactory(FoodlyConfiguration configuration) {
+      return configuration.getDataSourceFactory();
     }
+  };
 
-    @Override
-    public void initialize(Bootstrap<FoodlyConfiguration> bootstrap) {
+  @Override
+  public String getName() {
+    return "foodly";
+  }
 
-    }
+  @Override
+  public void initialize(Bootstrap<FoodlyConfiguration> bootstrap) {
+    bootstrap.addBundle(this.hibernate);
+  }
 
-    @Override
-    public void run(FoodlyConfiguration configuration,Environment environment) {
-        final GetFoodlySuggestion resource = new GetFoodlySuggestion(configuration.getRestaurants());
-        environment.jersey().register(resource);
-    }
+  @Override
+  public void run(FoodlyConfiguration configuration,Environment environment) {
+    SuggestionDAO sgdao = new SuggestionDAO(this.hibernate.getSessionFactory());
+    GetFoodlySuggestion resource = new GetFoodlySuggestion(configuration.getRestaurants(), sgdao);
+    environment.jersey().register(resource);
+  }
 
 }

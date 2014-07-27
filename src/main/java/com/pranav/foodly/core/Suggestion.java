@@ -1,23 +1,32 @@
 package com.pranav.foodly.core;
 
-import java.util.Random;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Created by pgandhi on 7/21/14.
- */
+@Entity
+@Table(name = "restaurant")
 public class Suggestion {
-    private String[] restaurants;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long id;
 
-    public Suggestion(String[] restaurants) {
-      this.restaurants = restaurants;
-    }
+  @Column(name = "name", nullable = false)
+  private String name;
 
-    @JsonProperty
-    public String getRestaurant() {
-      int idx = new Random().nextInt(this.restaurants.length);
-      return this.restaurants[idx];
-    }
+
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getName() {
+    return this.name;
+  }
 
 }
+
